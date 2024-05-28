@@ -6,8 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import objects.Patient;
 import objects.DatabaseConnection;
+import objects.Patient;
 import objects.Test;
 import objects.TestTableModel;
 
@@ -29,6 +29,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+import javax.swing.Box;
+import java.awt.Dimension;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+
+
 
 public class TestResults extends JFrame {
 
@@ -38,64 +47,99 @@ public class TestResults extends JFrame {
 	private int patientID;
 
 	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					TestResults frame = new TestResults(new Patient(1, "male", "Emre", 23, "Koc", "dummy"));
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
+	/**
+	 * Create the frame.
+	 */
 	public TestResults(Patient patient) {
-        this.patientID = patient.getId();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 600, 400);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+	    this.patientID = patient.getId();
+	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    setBounds(100, 100, 800, 400); 
+	    contentPane = new JPanel();
+	    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        setContentPane(contentPane);
-        contentPane.setLayout(new BorderLayout(0, 0));
+	    setContentPane(contentPane);
+	    contentPane.setLayout(new BorderLayout(0, 0));
 
-        JPanel headerPanel = new JPanel();
-        contentPane.add(headerPanel, BorderLayout.NORTH);
-        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+	    JPanel headerPanel = new JPanel();
+	    contentPane.add(headerPanel, BorderLayout.NORTH);
+	    headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
 
-        JPanel headerLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel headerLabel = new JLabel("Test Results");
-        headerLabelPanel.add(headerLabel);
-        headerPanel.add(headerLabelPanel);
+	    JPanel headerLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    JLabel headerLabel = new JLabel("Test Results");
+	    headerLabelPanel.add(headerLabel);
+	    headerPanel.add(headerLabelPanel);
 
-        JPanel patientNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel patientNameLabel = new JLabel("Patient: " + patient.getName() + " " + patient.getSurname());
-        patientNamePanel.add(patientNameLabel);
-        headerPanel.add(patientNamePanel);
+	    JPanel patientNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    JLabel patientNameLabel = new JLabel("Patient: " + patient.getName() + " " + patient.getSurname());
+	    patientNamePanel.add(patientNameLabel);
+	    headerPanel.add(patientNamePanel);
 
-        JPanel infoPanel = new JPanel();
-        contentPane.add(infoPanel, BorderLayout.WEST);
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+	    JPanel infoPanel = new JPanel();
+	    contentPane.add(infoPanel, BorderLayout.WEST);
+	    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-        JScrollPane resultsPane = new JScrollPane();
-        contentPane.add(resultsPane, BorderLayout.CENTER);
+	    JScrollPane resultsPane = new JScrollPane();
+	    contentPane.add(resultsPane, BorderLayout.CENTER);
 
-        List<Test> testList = fetchResults();
-        TestTableModel model = new TestTableModel(testList);
-        resultsTable = new JTable(model);
-        resultsPane.setViewportView(resultsTable);
+	    List<Test> testList = fetchResults();
+	    TestTableModel model = new TestTableModel(testList);
+	    resultsTable = new JTable(model);
+	    resultsPane.setViewportView(resultsTable);
 
-        JPanel avgBillingPanel = new JPanel();
-        contentPane.add(avgBillingPanel, BorderLayout.EAST);
-        avgBillingPanel.setLayout(new BoxLayout(avgBillingPanel, BoxLayout.Y_AXIS));
+	    JPanel billingPanel = new JPanel();
+	    contentPane.add(billingPanel, BorderLayout.EAST);
+	    billingPanel.setLayout(new BoxLayout(billingPanel, BoxLayout.Y_AXIS));
+	    billingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Billing Information"));
 
-        JLabel avgBillingHeader = new JLabel("Average Billings:");
-        avgBillingPanel.add(avgBillingHeader);
+	    JPanel avgBillingPanel = new JPanel();
+	    avgBillingPanel.setLayout(new BoxLayout(avgBillingPanel, BoxLayout.Y_AXIS));
+	    avgBillingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Average Billings"));
+	    billingPanel.add(avgBillingPanel);
 
-        Map<String, Float> avgBillingMap = fetchAvgBillings();
-        for (Map.Entry<String, Float> entry : avgBillingMap.entrySet()) {
-            JLabel label = new JLabel(entry.getKey() + ": " + entry.getValue());
-            avgBillingPanel.add(label);
-        }
+	    Map<String, Float> avgBillingMap = fetchAvgBillings();
+	    for (Map.Entry<String, Float> entry : avgBillingMap.entrySet()) {
+	        JLabel label = new JLabel("   " + entry.getKey() + ": " + entry.getValue() + "   ");
+	        avgBillingPanel.add(label);
+	    }
+	    
+        billingPanel.setPreferredSize(new Dimension(150, 200));
 
-        JPanel actionsPanel = new JPanel();
-        contentPane.add(actionsPanel, BorderLayout.SOUTH);
-        actionsPanel.setLayout(new BorderLayout(0, 0));
 
-        JButton closeButton = new JButton("Done");
-        closeButton.addActionListener(e -> dispose());
-        actionsPanel.add(closeButton, BorderLayout.EAST);
-    }
+	    billingPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+	    JPanel totalBillingPanel = new JPanel();
+	    totalBillingPanel.setLayout(new BoxLayout(totalBillingPanel, BoxLayout.Y_AXIS));
+	    totalBillingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Total Billings"));
+	    billingPanel.add(totalBillingPanel);
+
+	    float totalBilling = fetchTotalBillings();
+	    JLabel totalBillingLabel = new JLabel("   Total: " + totalBilling + "   ");
+	    totalBillingPanel.add(totalBillingLabel);
+
+	    JPanel actionsPanel = new JPanel();
+	    contentPane.add(actionsPanel, BorderLayout.SOUTH);
+	    actionsPanel.setLayout(new BorderLayout(0, 0));
+
+	    JButton closeButton = new JButton("Done");
+	    closeButton.addActionListener(e -> dispose());
+	    actionsPanel.add(closeButton, BorderLayout.EAST);
+	}
+
+
+
 	
 	private List<Test> fetchResults() {
 		List<Test> tests = new ArrayList<>();
@@ -144,6 +188,25 @@ public class TestResults extends JFrame {
         }
         return avgBillingMap;
     }
+	
+	private float fetchTotalBillings() {
+	    float totalBilling = 0;
+	    String totalBillingQuery = "SELECT SUM(billing) as total_billing FROM test WHERE p_id = ?;";
+
+	    try (Connection connection = DatabaseConnection.getConnection();
+	         PreparedStatement totalBillingStatement = connection.prepareStatement(totalBillingQuery)) {
+
+	        totalBillingStatement.setInt(1, this.patientID);
+	        ResultSet resultSet = totalBillingStatement.executeQuery();
+	        if (resultSet.next()) {
+	            totalBilling = resultSet.getFloat("total_billing");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return totalBilling;
+	}
+
 	
 	
 		
