@@ -1,10 +1,13 @@
 package sql;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import objects.DatabaseConnection;
+import objects.JMenuClass;
+import objects.Patient;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,27 +18,33 @@ import java.sql.*;
 import java.util.*;
 import java.util.List;
 
-public class MyAppointments {
+public class MyAppointments extends JFrame {
     private static Map<Integer, List<Object>> appointmentsMap = new HashMap<>();
     private int patientID;
+    private Patient patient;
 
-    public MyAppointments(int patientID) {
-        this.patientID = patientID;
-        SwingUtilities.invokeLater(() -> {
-            populateAppointmentsMap();
-            createInputFrame();
+    public MyAppointments(Patient patient) {
+        this.patientID = patient.getId();
+        this.patient = patient;
+        populateAppointmentsMap();
+        createInputFrame(this);
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            try {
+                // Creating a dummy patient object for demonstration purposes
+                //Patient dummyPatient = new Patient(1, "male", "John", 30, "Doe", "dummy", "");
+                MyAppointments frame = new MyAppointments(null);
+                //frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 
     private void populateAppointmentsMap() {
-        String url = "jdbc:mysql://localhost:3306/hospital";
-        String user = "root";
-        String password = "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";
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DatabaseConnection.getConnection();
-
+        try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "SELECT appointment.id, p_id, appointment_date, d_id, stat, billing, department_name, d_name, surname, age " +
                     "FROM appointment INNER JOIN doctor ON doctor.id = appointment.d_id WHERE p_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -67,20 +76,18 @@ public class MyAppointments {
 
                 appointmentsMap.put(id, appointmentInfo);
             }
-
-            connection.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void createInputFrame() {
+    private void createInputFrame(JFrame mainFrame) {
         JFrame inputFrame = new JFrame("Filter Appointments");
-        inputFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        inputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         inputFrame.setSize(400, 350);
 
         JPanel inputPanel = new JPanel(new GridBagLayout());
-        inputPanel.setBackground(Color.BLUE);
+        inputPanel.setBackground(Color.decode("#00008B"));
         inputPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -96,20 +103,16 @@ public class MyAppointments {
         JLabel statusLabel = new JLabel("Status:");
         statusLabel.setForeground(Color.WHITE);
         JPanel statusPanel = new JPanel();
-        statusPanel.setBackground(Color.BLUE);
+        statusPanel.setBackground(Color.decode("#00008B"));
         statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
         JCheckBox confirmedCheckbox = new JCheckBox("Confirmed");
         JCheckBox cancelledCheckbox = new JCheckBox("Cancelled");
-        JCheckBox pendingCheckbox = new JCheckBox("Pending");
-        confirmedCheckbox.setBackground(Color.BLUE);
-        cancelledCheckbox.setBackground(Color.BLUE);
-        pendingCheckbox.setBackground(Color.BLUE);
+        confirmedCheckbox.setBackground(Color.decode("#00008B"));
+        cancelledCheckbox.setBackground(Color.decode("#00008B"));
         confirmedCheckbox.setForeground(Color.WHITE);
         cancelledCheckbox.setForeground(Color.WHITE);
-        pendingCheckbox.setForeground(Color.WHITE);
         statusPanel.add(confirmedCheckbox);
         statusPanel.add(cancelledCheckbox);
-        statusPanel.add(pendingCheckbox);
 
         JButton submitButton = new JButton("Submit");
         submitButton.setPreferredSize(new Dimension(200, 30));
@@ -121,26 +124,25 @@ public class MyAppointments {
         inputPanel.add(submitButton, gbc);
 
         inputFrame.add(inputPanel);
+        JMenuClass menuItem = new JMenuClass(this, patient);
+        inputFrame.setJMenuBar(menuItem.getMenuBar());
         inputFrame.setVisible(true);
+        mainFrame.setVisible(false);
 
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String doctorName = (String) doctorNameComboBox.getSelectedItem();
-                if ("All".equals(doctorName)) {
-                    doctorName = "";
-                }
-                List<String> statuses = new ArrayList<>();
-                if (confirmedCheckbox.isSelected()) statuses.add("confirmed");
-                if (cancelledCheckbox.isSelected()) statuses.add("cancelled");
-                if (pendingCheckbox.isSelected()) statuses.add("pending");
-                inputFrame.dispose();
-                showAppointments(doctorName, statuses);
+        submitButton.addActionListener(e -> {
+            String doctorName = (String) doctorNameComboBox.getSelectedItem();
+            if ("All".equals(doctorName)) {
+                doctorName = "";
             }
+            List<String> statuses = new ArrayList<>();
+            if (confirmedCheckbox.isSelected()) statuses.add("confirmed");
+            if (cancelledCheckbox.isSelected()) statuses.add("cancelled");
+            inputFrame.dispose();
+            showAppointments(mainFrame, doctorName, statuses);
         });
     }
 
-    private static String[] getDoctorNames() {
+    private String[] getDoctorNames() {
         Set<String> doctorNames = new HashSet<>();
         doctorNames.add("All");
         doctorNames.addAll(appointmentsMap.values().stream()
@@ -149,9 +151,10 @@ public class MyAppointments {
                 .toList());
         return doctorNames.toArray(new String[0]);
     }
-    private static void showAppointments(String doctorName, List<String> statuses) {
+
+    private void showAppointments(JFrame mainFrame, String doctorName, List<String> statuses) {
         JFrame frame = new JFrame("Appointments");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
 
@@ -266,11 +269,12 @@ public class MyAppointments {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Close appointments frame
-                createInputFrame(); // Reopen filter input frame
+                createInputFrame(mainFrame); // Reopen filter input frame
             }
         });
 
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.setVisible(true);
+        mainFrame.setVisible(false);
     }
 }

@@ -57,7 +57,6 @@ public class LogIn extends JFrame implements ActionListener, MouseListener {
     }
 
     public LogIn() {
-        url = "jdbc:mysql://localhost:3306/hospital";
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 500);

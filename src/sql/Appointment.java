@@ -39,6 +39,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -48,6 +49,7 @@ import javax.swing.border.EmptyBorder;
 
 import objects.DatabaseConnection;
 import objects.Doctor;
+import objects.JMenuClass;
 import objects.Patient;
 
 public class Appointment extends JFrame implements ActionListener,MouseListener{
@@ -63,7 +65,6 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	JPanel down;
 	
 	JLabel topText;
-
 	JButton apply;
 	
 	HashMap<JLabel,Doctor> panelMap;
@@ -235,6 +236,13 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         add(scrollPane, BorderLayout.CENTER);
+        
+        JMenuClass menuItem = new JMenuClass(this,patient);
+        JMenuItem appointmentMenu = new JMenuItem("Appointment");
+        appointmentMenu.addActionListener(e -> goToAppointment());
+//        menuItem.getMenuBar().add(appointmentMenu);
+        menuItem.add(appointmentMenu);
+        setJMenuBar(menuItem.getMenuBar());
         
         
 
@@ -609,6 +617,12 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
     		}
 		return null;
     }
+	
+	public void goToAppointment() {
+		// TODO Auto-generated method stub
+    	new PendingAppointments(patient).setVisible(true);
+    	this.dispose();	
+	}
 
 }
 

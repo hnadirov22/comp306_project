@@ -168,6 +168,24 @@ public class HomePage extends JFrame implements ActionListener,MouseListener{
 			PendingAppointments window = new PendingAppointments(patient);
 			window.setVisible(true);
 		}
+		
+		else if(e.getSource()==vaccine) {
+			dispose();
+			Vaccine window = new Vaccine(patient);
+			window.setVisible(true);
+		}
+		
+		else if(e.getSource()==records) {
+			dispose();
+			MyAppointments window = new MyAppointments(patient);
+			//window.setVisible(true);
+		}
+		
+		else if(e.getSource()==profile) {
+			dispose();
+			PatientProfile window = new PatientProfile(patient);
+			window.setVisible(true);
+		}
 	}
 	
 	public void addButton(JButton button) {

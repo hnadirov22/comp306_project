@@ -29,10 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,6 +48,7 @@ import javax.swing.border.LineBorder;
 
 import objects.DatabaseConnection;
 import objects.Doctor;
+import objects.JMenuClass;
 import objects.Patient;
 
 public class PendingAppointments extends JFrame implements ActionListener {
@@ -95,6 +100,11 @@ public class PendingAppointments extends JFrame implements ActionListener {
         gbd.gridwidth = 4;
         gbd.anchor = GridBagConstraints.CENTER;
         topPanel.add(headerLabel, gbd);
+        
+        
+        
+        JMenuClass menuItem = new JMenuClass(this,myPatient);
+        setJMenuBar(menuItem.getMenuBar());
 
         // Reset gridwidth for the rest of the components
         gbd.gridwidth = 1;
@@ -506,6 +516,5 @@ public class PendingAppointments extends JFrame implements ActionListener {
         
     }
     
- 
 
 }
