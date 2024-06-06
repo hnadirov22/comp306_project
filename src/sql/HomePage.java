@@ -1,220 +1,307 @@
+//
+//package sql;
+//
+//import java.awt.*;
+//import java.awt.event.*;
+//import javax.swing.*;
+//import javax.swing.border.EmptyBorder;
+//import objects.Patient;
+//
+//public class HomePage extends JFrame implements ActionListener, MouseListener {
+//
+//    private JPanel mainPanel;
+//    private JPanel northPanel;
+//    private JLabel nameLabel;
+//
+//    private JButton appointmentButton;
+//    private JButton recordsButton;
+//    private JButton vaccineButton;
+//
+//    private Color backgroundColor;
+//    private Patient patient;
+//
+//    public static void main(String[] args) {
+//        EventQueue.invokeLater(() -> {
+//            try {
+//                HomePage frame = new HomePage(null);
+//                frame.setVisible(true);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+//
+//    public HomePage(Patient patient) {
+//        this.patient = patient;
+//
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setSize(500, 600);
+//        setLayout(new BorderLayout());
+//
+//        backgroundColor = Color.decode("#00008B");
+//
+//        // Profile Panel setup
+//        northPanel = createProfilePanel();
+//        northPanel.setBackground(backgroundColor);
+//
+//        add(northPanel, BorderLayout.NORTH);
+//
+//        // Main panel setup for buttons
+//        mainPanel = new JPanel();
+//        mainPanel.setLayout(new GridLayout(3, 1, 10, 10));
+//        mainPanel.setBackground(backgroundColor);
+//        mainPanel.setBorder(new EmptyBorder(10, 50, 10, 50));
+//
+//        // Buttons
+//        vaccineButton = createButton("Vaccine");
+//        appointmentButton = createButton("Appointment");
+//        recordsButton = createButton("Records");
+//
+//        add(mainPanel, BorderLayout.CENTER);
+//    }
+//
+//    private JPanel createProfilePanel() {
+//        JPanel profilePanel = new JPanel(new BorderLayout());
+//        profilePanel.setPreferredSize(new Dimension(500, 100));
+//        profilePanel.setBackground(backgroundColor);
+//
+//        nameLabel = new JLabel("Raul Aliyev");
+//        nameLabel.setFont(new Font("Century Gothic", Font.BOLD, 30));
+//        nameLabel.setForeground(Color.WHITE);
+//        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//        nameLabel.setBorder(new EmptyBorder(20, 0, 20, 0));
+//        nameLabel.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                dispose();
+//                PatientProfile window = new PatientProfile(patient);
+//                window.setVisible(true);
+//            }
+//        });
+//        profilePanel.add(nameLabel, BorderLayout.CENTER);
+//
+//        return profilePanel;
+//    }
+//
+//    private JButton createButton(String text) {
+//        JButton button = new JButton(text);
+//        button.setFocusPainted(false);
+//        button.setBorderPainted(false);
+//        button.setBackground(backgroundColor);
+//        button.setForeground(Color.WHITE);
+//        button.setFont(new Font("Century Gothic", Font.BOLD, 30));
+//        button.addActionListener(this);
+//        button.addMouseListener(this);
+//
+//        JPanel buttonPanel = new JPanel(new BorderLayout());
+//        buttonPanel.setBackground(backgroundColor);
+//        JLabel dotLabel = new JLabel("\u2022");
+//        dotLabel.setFont(new Font("Century Gothic", Font.BOLD, 30));
+//        dotLabel.setForeground(Color.WHITE);
+//        dotLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//        buttonPanel.add(dotLabel, BorderLayout.WEST);
+//        buttonPanel.add(button, BorderLayout.CENTER);
+//
+//        mainPanel.add(buttonPanel);
+//        return button;
+//    }
+//
+//    @Override
+//    public void mouseClicked(MouseEvent e) {
+//        // TODO Auto-generated method stub
+//    }
+//
+//    @Override
+//    public void mousePressed(MouseEvent e) {
+//        // TODO Auto-generated method stub
+//    }
+//
+//    @Override
+//    public void mouseReleased(MouseEvent e) {
+//        // TODO Auto-generated method stub
+//    }
+//
+//    @Override
+//    public void mouseEntered(MouseEvent e) {
+//        // TODO Auto-generated method stub
+//    }
+//
+//    @Override
+//    public void mouseExited(MouseEvent e) {
+//        // TODO Auto-generated method stub
+//    }
+//
+//    @Override
+//    public void actionPerformed(ActionEvent e) {
+//        if (e.getSource() == appointmentButton) {
+//            dispose();
+//            PendingAppointments window = new PendingAppointments(patient);
+//            window.setVisible(true);
+//        } else if (e.getSource() == vaccineButton) {
+//            dispose();
+//            Vaccine window = new Vaccine(patient);
+//            window.setVisible(true);
+//        } else if (e.getSource() == recordsButton) {
+//            dispose();
+//            MyAppointments window = new MyAppointments(patient);
+//            window.setVisible(true);
+//        }
+//    }
+//}
+//
+
 package sql;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import objects.Patient;
 
+public class HomePage extends JFrame implements ActionListener, MouseListener {
 
+    private JPanel mainPanel;
+    private JPanel northPanel;
+    private JLabel nameLabel;
 
+    private JButton appointmentButton;
+    private JButton recordsButton;
+    private JButton vaccineButton;
 
-public class HomePage extends JFrame implements ActionListener,MouseListener{
-	
-	JPanel panel;
-	JPanel northPanel;
-	JPanel westPanel;
-	JPanel eastPanel;
-	JPanel southPanel;
-	JLabel titleLabel;
-	
-	JButton appointment;
-	JButton records;
-	JButton vaccine;
-	JButton profile;
-	
-	Color backgroundColor;
-	
-	Patient patient;
+    private Color panelColor;
+    private Color backgroundColor;
+    private Patient patient;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					HomePage frame = new HomePage(null);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
-	
-	public HomePage(Patient patient) {
-		this.patient=patient;
-		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(500,500);
-		setLayout(new BorderLayout());
-		
-		backgroundColor = Color.decode("#00008B");
-		
-		northPanel = new JPanel();
-		westPanel = new JPanel();
-		eastPanel = new JPanel();
-		southPanel = new JPanel();
-		
-	
-		
-		
-		northPanel.setBackground(backgroundColor);
-		eastPanel.setBackground(backgroundColor);
-		westPanel.setBackground(backgroundColor);
-		southPanel.setBackground(backgroundColor);
-		
-		
-		
-		northPanel.setPreferredSize(new Dimension(200,200));
-		westPanel.setPreferredSize(new Dimension(100,100));
-		eastPanel.setPreferredSize(new Dimension(100,100));
-		southPanel.setPreferredSize(new Dimension(100,100));
-		
-		
-		add(northPanel,BorderLayout.NORTH);
-		add(westPanel,BorderLayout.WEST);
-		add(eastPanel,BorderLayout.EAST);
-		add(southPanel,BorderLayout.SOUTH);
-		
-		
-		titleLabel = new JLabel("Home Page");
-		titleLabel.setBorder(new EmptyBorder(30, 0, 0, 0));  
-        Font font = new Font("Century Gothic",Font.BOLD, 70); 
-        titleLabel.setFont(font);
-        titleLabel.setForeground(Color.white);
-        
-        
-        northPanel.add(titleLabel);
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            try {
+                HomePage frame = new HomePage(null);
+                frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
-		
-		panel = new JPanel();
-		panel.setLayout(new GridLayout(2,2,40,40));
-		panel.setBackground(backgroundColor);
-		
-		
-		appointment = new JButton("Appointment");
-		this.addButton(appointment);
+    public HomePage(Patient patient) {
+        this.patient = patient;
 
-		records = new JButton("Records");
-		this.addButton(records);
-		
-		vaccine = new JButton("Vaccine");
-		this.addButton(vaccine);
-		
-		profile  = new JButton("Profile");
-		this.addButton(profile);
-		
-		add(panel,BorderLayout.CENTER);
-	}
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 600);
+        setLayout(new BorderLayout());
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+        backgroundColor = Color.WHITE;
+        panelColor = Color.decode("#00008B");
 
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+        // Profile Panel setup
+        northPanel = createProfilePanel();
+        northPanel.setBackground(panelColor);
 
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+        add(northPanel, BorderLayout.NORTH);
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-//		JButton source = (JButton)e.getSource();
-//        source.setBorderPainted(true);
-		
-	}
+        // Main panel setup for buttons
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new GridLayout(3, 1, 10, 10));
+        mainPanel.setBackground(backgroundColor);
+        mainPanel.setBorder(new EmptyBorder(10, 50, 10, 50));
 
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-//		JButton source = (JButton)e.getSource();
-//        source.setBorderPainted(true);
-		
-	}
+        // Buttons
+        vaccineButton = createButton("Vaccine");
+        appointmentButton = createButton("Appointment");
+        recordsButton = createButton("Records");
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		if(e.getSource()==appointment) {
-			dispose();
-			PendingAppointments window = new PendingAppointments(patient);
-			window.setVisible(true);
-		}
-		
-		else if(e.getSource()==vaccine) {
-			dispose();
-			Vaccine window = new Vaccine(patient);
-			window.setVisible(true);
-		}
-		
-		else if(e.getSource()==records) {
-			dispose();
-			MyAppointments window = new MyAppointments(patient);
-			
-			//PastOperations window = new PastOperations(patient);
-			
-			//window.setVisible(true);
-		}
-		
-		else if(e.getSource()==profile) {
-			dispose();
-			PatientProfile window = new PatientProfile(patient);
-			window.setVisible(true);
-		}
-	}
-	
-	public void addButton(JButton button) {
-		
-		button.setFocusPainted(false);
-        button.setBorderPainted(true); 
-        // 
-		button.setBackground(backgroundColor);
-		button.setForeground(Color.white);
-		
-		button.addActionListener(this);
-		button.addMouseListener(this);
-	
-		button.setFont(new Font("Century Gothic",Font.BOLD, 50));
-		panel.add(button);
-	}
-	
-	
+        add(mainPanel, BorderLayout.CENTER);
+    }
 
+    private JPanel createProfilePanel() {
+        JPanel profilePanel = new JPanel(new BorderLayout());
+        profilePanel.setPreferredSize(new Dimension(500, 100));
+        profilePanel.setBackground(panelColor);
 
+        nameLabel = new JLabel("Raul Aliyev");
+        nameLabel.setFont(new Font("Century Gothic", Font.BOLD, 30));
+        nameLabel.setForeground(Color.WHITE);
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nameLabel.setBorder(new EmptyBorder(20, 0, 20, 0));
+        nameLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+                PatientProfile window = new PatientProfile(patient);
+                window.setVisible(true);
+            }
+        });
+        profilePanel.add(nameLabel, BorderLayout.CENTER);
+
+        return profilePanel;
+    }
+
+    private JButton createButton(String text) {
+        JButton button = new JButton(text);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setBackground(panelColor);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Century Gothic", Font.BOLD, 30));
+        button.addActionListener(this);
+        button.addMouseListener(this);
+
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setBackground(panelColor);
+        JLabel dotLabel = new JLabel("\u2022");
+        dotLabel.setFont(new Font("Century Gothic", Font.BOLD, 30));
+        dotLabel.setForeground(Color.WHITE);
+        dotLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        buttonPanel.add(dotLabel, BorderLayout.WEST);
+        buttonPanel.add(button, BorderLayout.CENTER);
+
+        mainPanel.add(buttonPanel);
+        return button;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == appointmentButton) {
+            dispose();
+            PendingAppointments window = new PendingAppointments(patient);
+            window.setVisible(true);
+        } else if (e.getSource() == vaccineButton) {
+            dispose();
+            Vaccine window = new Vaccine(patient);
+            window.setVisible(true);
+        } else if (e.getSource() == recordsButton) {
+            dispose();
+//            MyAppointments window = new MyAppointments(patient);
+//            TestResults window= new TestResults(patient);
+            PastOperations window=new PastOperations(patient);
+
+            window.setVisible(true);
+        }
+    }
 }
-
-
-
-
-
-
-
 

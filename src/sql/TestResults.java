@@ -1,24 +1,20 @@
+
 package sql;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import objects.DatabaseConnection;
 import objects.JMenuClass;
 import objects.Patient;
 import objects.Test;
 import objects.TestTableModel;
-
 import javax.swing.BoxLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.sql.Connection;
@@ -29,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JButton;
@@ -37,12 +32,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Box;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-
-
 
 public class TestResults extends JFrame {
 
@@ -56,7 +46,7 @@ public class TestResults extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    TestResults frame = new TestResults(null);
+                    TestResults frame = new TestResults(new Patient(1, "male", "Azad", 22, "ASLANLI", "dummy", "aaslanli21"));
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -69,7 +59,7 @@ public class TestResults extends JFrame {
      * Create the frame.
      */
     public TestResults(Patient patient) {
-    	this.patient = patient;
+        this.patient = patient;
         this.patientID = patient.getId();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 800, 400);
@@ -84,15 +74,26 @@ public class TestResults extends JFrame {
         contentPane.add(headerPanel, BorderLayout.NORTH);
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
 
-        JPanel headerLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        headerLabelPanel.setBackground(Color.decode("#00008B"));
-        JLabel headerLabel = new JLabel("Test Results");
-        headerLabel.setFont(new Font("Objektiv Mk1", Font.BOLD, 20));
-        headerLabel.setForeground(Color.white);
-        headerLabelPanel.add(headerLabel);
-        headerPanel.add(headerLabelPanel);
+        JPanel headerButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        headerButtonPanel.setBackground(Color.decode("#00008B"));
 
-        headerPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Adding whitespace between Test Results and Patient name
+        JButton appointmentsButton = createHeaderButton("Appointments");
+        appointmentsButton.addActionListener(e -> goToAppointment());
+        headerButtonPanel.add(appointmentsButton);
+
+        JButton operationsButton = createHeaderButton("Operations");
+        operationsButton.addActionListener(e -> goToOperations());
+        headerButtonPanel.add(operationsButton);
+
+        JButton testResultsButton = createHeaderButton("Test Results");
+        testResultsButton.setBackground(Color.decode("#00008B"));
+
+        testResultsButton.setForeground(Color.decode("#ADD8E6")); // Light blue color for the current page
+        headerButtonPanel.add(testResultsButton);
+
+        headerPanel.add(headerButtonPanel);
+
+        headerPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Adding whitespace between buttons and Patient name
 
         JPanel patientNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         patientNamePanel.setBackground(Color.decode("#00008B"));
@@ -146,31 +147,34 @@ public class TestResults extends JFrame {
         JLabel totalBillingLabel = new JLabel("   Total: " + totalBilling + "   ");
         totalBillingPanel.add(totalBillingLabel);
 
-//        JPanel actionsPanel = new JPanel();
-//        contentPane.add(actionsPanel, BorderLayout.SOUTH);
-//        actionsPanel.setLayout(new BorderLayout(0, 0));
-//
-//        JButton closeButton = new JButton("Done");
-//        closeButton.addActionListener(e -> dispose());
-//        actionsPanel.add(closeButton, BorderLayout.EAST);
-        JMenuClass menuItem = new JMenuClass(this,patient);
-        
+        JMenuClass menuItem = new JMenuClass(this, patient);
+
         JMenuItem operation = new JMenuItem("Operations");
         operation.addActionListener(e -> goToOperations());
         menuItem.add(operation);
-        
+
         JMenuItem appointment = new JMenuItem("Appointments");
         appointment.addActionListener(e -> goToAppointment());
         menuItem.add(appointment);
-        
+
         setJMenuBar(menuItem.getMenuBar());
+    }
+
+    private JButton createHeaderButton(String text) {
+        JButton button = new JButton(text);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setBackground(Color.decode("#00008B"));
+        button.setForeground(Color.white);
+        button.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
+        return button;
     }
 
     private List<Test> fetchResults() {
         List<Test> tests = new ArrayList<>();
         String resultsQuery = "SELECT *\n"
-                            + "FROM test\n"
-                            + "WHERE p_id = ?;";
+                + "FROM test\n"
+                + "WHERE p_id = ?;";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement resultsStatement = connection.prepareStatement(resultsQuery)) {
@@ -231,14 +235,14 @@ public class TestResults extends JFrame {
         }
         return totalBilling;
     }
-    
+
     public void goToOperations() {
-    	new PastOperations(patient).setVisible(true);
-    	this.dispose();	
+        new PastOperations(patient).setVisible(true);
+        this.dispose();
     }
-    
+
     public void goToAppointment() {
-    	new MyAppointments(patient);
-    	this.dispose();	
+        new MyAppointments(patient).setVisible(true);
+        this.dispose();
     }
 }
